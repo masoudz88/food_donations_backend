@@ -1,7 +1,7 @@
 const { response } = require("express");
 const express = require("express");
 const app = express();
-const port = 5000;
+const port = 4000;
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -25,27 +25,14 @@ const fakeCompanies = [
   },
 ];
 
-let bodyParser = require("body-parser");
-app.use(bodyParser.json());
-
-let products = [];
-
-app.post("/products", function (req, res) {
-  const newProduct = { ...req.body, id: products.length + 1 };
-  products = [...products, newProduct];
-  res.json(newProduct);
-});
-
-app.put("/products", function (req, res) {
-  // implement
-});
-
-app.delete("/products/:id", function (req, res) {
-  // implement
-});
-
 app.get("/products", (req, res) => {
-  res.json(products);
+  res.send(JSON.stringify(fakeProducts));
+});
+app.get("/companies", (req, res) => {
+  res.send(JSON.stringify(fakeCompanies));
+});
+app.get("/products/:id", (req, res) => {
+  res.send(JSON.stringify(fakeProducts.find((p) => p.id === req.params.id)));
 });
 app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
