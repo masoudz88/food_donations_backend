@@ -32,7 +32,7 @@ app.get("/companies", (req, res) => {
   res.send(JSON.stringify(fakeCompanies));
 });
 app.get("/products/:id", (req, res) => {
-  res.send(JSON.stringify(fakeProducts.find((p) => p.id === req.params.id)));
+  res.send(JSON.stringify(fakeProducts.find((p) => p.id === +req.params.id)));
 });
 app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
