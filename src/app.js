@@ -38,6 +38,7 @@ app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
 });
 
-console.log("here");
+console.log(module);
 const debug = require("debug")("app");
 debug(" through debugger");
+
