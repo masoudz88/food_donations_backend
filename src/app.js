@@ -3,30 +3,21 @@ const express = require("express");
 const app = express();
 const port = 4000;
 
-app.get("/", (req, res) => {
-  res.send("Hello Masoud!");
-});
+let bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const fakeProducts = [
-  { id: 1, product: "Meat" },
-  { id: 2, product: "Dairy" },
-  { id: 3, product: "cooked food" },
-  { id: 4, product: "Seafood" },
+
+let fakeProducts = [
+  { id: 1, name: "Meat" },
+  { id: 2, name: "Dairy" },
+  { id: 3, name: "cooked food" },
+  { id: 4, name: "Seafood" },
 ];
-const fakeCompanies = [
-  { id: "1", name: "Sobeys", color: "green", image: "./logos/sobeys.png" },
-  { id: "2", name: "Walmart", color: "blue", image: "./logos/wal.png" },
-  { id: "3", name: "Costco", color: "red", image: "./logos/cost.png" },
-  {
-    id: "4",
-    name: "McDonald's",
-    color: "yellow",
-    image: "./logos/McDonalds-Logo.png",
-  },
-];
+
 
 app.get("/products", (req, res) => {
-  res.send(JSON.stringify(fakeProducts));
+  res.send(fakeProducts);
 });
 app.get("/companies", (req, res) => {
   res.send(fakeCompanies);
@@ -35,11 +26,20 @@ app.get("/products/:id", (req, res) => {
   res.send(fakeProducts.find((p) => p.id === +req.params.id));
 });
 app.post("/products", function (req, res) {
-  fakeProducts = [...fakeProducts, fakeCompanies];
-  res.send(fakeCompanies);
+  const newProduct = { ...req.body, id: fakeProducts.length + 1 };
+  fakeProducts = [...fakeProducts, newProduct];
+  res.send(newProduct);
 });
 app.put("/products/:id", (req, res) => {
-  res.send({ msg: `Update product ${req.params.id}` });
+  let updatedProduct;
+  fakeProducts = fakeProducts.map((p) => {
+    if (p.id === req.body.id) {
+      updatedProduct = { ...p, ...req.body };
+      return updatedProduct;
+    }
+    return p;
+  });
+  res.json(updatedProduct);
 });
 app.delete("/products/delete/:id", (req, res) => {
   const deletedProduct = fakeProducts.find((p) => p.id === +req.params.id);
