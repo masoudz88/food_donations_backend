@@ -4,7 +4,7 @@ const app = express();
 const port = 4000;
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello Masoud!");
 });
 
 const fakeProducts = [
@@ -29,16 +29,22 @@ app.get("/products", (req, res) => {
   res.send(JSON.stringify(fakeProducts));
 });
 app.get("/companies", (req, res) => {
-  res.send(JSON.stringify(fakeCompanies));
+  res.send(fakeCompanies);
 });
 app.get("/products/:id", (req, res) => {
-  res.send(JSON.stringify(fakeProducts.find((p) => p.id === +req.params.id)));
+  res.send(fakeProducts.find((p) => p.id === +req.params.id));
+});
+app.post("/products", function (req, res) {
+  fakeProducts = [...fakeProducts, fakeCompanies];
+  res.send(fakeCompanies);
+});
+app.put("/products/:id", (req, res) => {
+  res.send({ msg: `Update product ${req.params.id}` });
+});
+app.delete("/products/:id", (req, res) => {
+  res.send(fakeProducts.find((p) => p.id === +req.params.id));
+  res.send(fakeProducts.filter((p) => p.id === +req.params.id));
 });
 app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
 });
-
-console.log(module);
-const debug = require("debug")("app");
-debug(" through debugger");
-

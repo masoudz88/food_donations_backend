@@ -7,4 +7,5 @@ console.log(myUrl.href);
 console.log(myUrl.host);
 console.log(myUrl.hostname);
 console.log(myUrl.pathname);
-console.log(myUrl.search);
+console.log(myUrl.searchParams);
+myUrl.searchParams.forEach((name, value) => console.log(`${value}:${name}`));
