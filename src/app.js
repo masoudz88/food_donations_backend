@@ -41,9 +41,10 @@ app.post("/products", function (req, res) {
 app.put("/products/:id", (req, res) => {
   res.send({ msg: `Update product ${req.params.id}` });
 });
-app.delete("/products/:id", (req, res) => {
-  res.send(fakeProducts.find((p) => p.id === +req.params.id));
-  res.send(fakeProducts.filter((p) => p.id === +req.params.id));
+app.delete("/products/delete/:id", (req, res) => {
+  const deletedProduct = fakeProducts.find((p) => p.id === +req.params.id);
+  fakeProducts = fakeProducts.filter((p) => p.id === +req.params.id);
+  res.send(deletedProduct);
 });
 app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
