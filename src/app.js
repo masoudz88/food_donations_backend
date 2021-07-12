@@ -7,7 +7,6 @@ let bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 let fakeProducts = [
   { id: 1, name: "Meat" },
   { id: 2, name: "Dairy" },
@@ -15,22 +14,19 @@ let fakeProducts = [
   { id: 4, name: "Seafood" },
 ];
 
-
 app.get("/products", (req, res) => {
   res.send(fakeProducts);
 });
 app.get("/companies", (req, res) => {
   res.send(fakeCompanies);
 });
-app.get("/products/:id", (req, res) => {
-  res.send(fakeProducts.find((p) => p.id === +req.params.id));
-});
+
 app.post("/products", function (req, res) {
   const newProduct = { ...req.body, id: fakeProducts.length + 1 };
   fakeProducts = [...fakeProducts, newProduct];
   res.send(newProduct);
 });
-app.put("/products/:id", (req, res) => {
+app.put("/products", (req, res) => {
   let updatedProduct;
   fakeProducts = fakeProducts.map((p) => {
     if (p.id === req.body.id) {
@@ -41,9 +37,9 @@ app.put("/products/:id", (req, res) => {
   });
   res.json(updatedProduct);
 });
-app.delete("/products/delete/:id", (req, res) => {
+app.delete("/products/:id", (req, res) => {
   const deletedProduct = fakeProducts.find((p) => p.id === +req.params.id);
-  fakeProducts = fakeProducts.filter((p) => p.id === +req.params.id);
+  fakeProducts = fakeProducts.filter((p) => p.id !== +req.params.id);
   res.send(deletedProduct);
 });
 app.listen(port, () => {
