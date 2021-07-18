@@ -21,7 +21,8 @@ let db;
   CREATE TABLE IF NOT EXISTS product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
-  );
+  ); 
+    INSERT INTO product(name) VALUES("meat"),('Dairy')
   `);
 })();
 
@@ -49,9 +50,25 @@ app.get("/products/:id", async (req, res) => {
 });
 
 app.post("/products", function (req, res) {
-  const newProduct = { ...req.body, id: fakeProducts.length + 1 };
-  fakeProducts = [...fakeProducts, newProduct];
-  res.send(newProduct);
+  // const newProduct = { ...req.body, id: fakeProducts.length + 1 };
+  // fakeProducts = [...fakeProducts, newProduct];
+  let languages = ["C++", "Python", "Java", "C#", "Go"];
+
+  // construct the insert statement with multiple placeholders
+  // based on the number of rows
+  let placeholders = languages.map((language) => "(?)").join(",");
+  let sql = "INSERT INTO product(name) VALUES " + placeholders;
+
+  // output the INSERT statement
+  console.log(sql);
+  res.send(
+    db.run(sql, languages, function (err) {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(`Rows inserted ${this.changes}`);
+    })
+  );
 });
 
 app.put("/products", (req, res) => {
