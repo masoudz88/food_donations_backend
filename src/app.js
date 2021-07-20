@@ -21,7 +21,11 @@ let db;
   CREATE TABLE IF NOT EXISTS product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
-  );   
+  );  
+  CREATE TABLE IF NOT EXISTS company (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+  ); 
   INSERT INTO product(name) VALUES('Meat')   
   `);
 })();
@@ -77,34 +81,31 @@ app.delete("/products/:id", async (req, res) => {
 //companies
 
 app.get("/companies", async (req, res) => {
-  res.send(fakeCompanies);
+  res.send(await db.all("select * from company"));
 });
 app.get("/companies/:id", async (req, res) => {
-  res.send(fakeCompanies.find((c) => c.id === +req.params.id));
+  res.send(await db.get("select * from company where id = ?", +req.params.id));
 });
 
-app.post("/companies", function (req, res) {
-  const newCompany = { ...req.body, id: fakeCompanies.length + 1 };
-  fakeCompanies = [...fakeCompanies, newCompany];
-  res.send(newCompany);
+app.post("/companies", async (req, res) => {
+  res.send(await db.run("INSERT INTO company(name) VALUES('newCompany')"));
 });
 
-app.put("/companies", (req, res) => {
-  let updatedCompany;
-  fakeCompanies = fakeCompanies.map((c) => {
-    if (c.id === req.body.id) {
-      updatedCompany = { ...c, ...req.body };
-      return updatedCompany;
-    }
-    return c;
-  });
-  res.json(updatedCompany);
+app.post("/companies/:id", async (req, res) => {
+  res.send(await db.run("INSERT INTO company(name) VALUES(?)", req.body.name));
 });
 
-app.delete("/companies/:id", (req, res) => {
-  const deletedCompany = fakeCompanies.find((c) => c.id === +req.params.id);
-  fakeCompanies = fakeCompanies.filter((c) => c.id !== +req.params.id);
-  res.send(deletedCompany);
+app.put("/companies", async (req, res) => {
+  res.json(
+    await db.run(
+      "UPDATE company SET name = 'new updated company' WHERE id = ?",
+      +req.body.id
+    )
+  );
+});
+
+app.delete("/companies/:id", async (req, res) => {
+  res.send(await db.run("DELETE FROM company WHERE id = ?", +req.body.id));
 });
 
 app.listen(port, () => {
