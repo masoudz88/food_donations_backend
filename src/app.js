@@ -21,8 +21,8 @@ let db;
   CREATE TABLE IF NOT EXISTS product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
-  ); 
-    INSERT INTO product(name) VALUES("meat"),('Dairy')
+  );   
+  INSERT INTO product(name) VALUES('Meat')   
   `);
 })();
 
@@ -55,22 +55,23 @@ app.post("/products", async (req, res) => {
   res.send(await db.run("INSERT INTO product(name) VALUES('newProduct')"));
 });
 
-app.put("/products", (req, res) => {
-  let updatedProduct;
-  fakeProducts = fakeProducts.map((p) => {
-    if (p.id === req.body.id) {
-      updatedProduct = { ...p, ...req.body };
-      return updatedProduct;
-    }
-    return p;
-  });
-  res.json(updatedProduct);
+app.post("/products/:id", async (req, res) => {
+  // const newProduct = { ...req.body, id: fakeProducts.length + 1 };
+  // fakeProducts = [...fakeProducts, newProduct];
+  res.send(await db.run("INSERT INTO product(name) VALUES(?)", req.body.name));
 });
 
-app.delete("/products/:id", (req, res) => {
-  const deletedProduct = fakeProducts.find((p) => p.id === +req.params.id);
-  fakeProducts = fakeProducts.filter((p) => p.id !== +req.params.id);
-  res.send(deletedProduct);
+app.put("/products", async (req, res) => {
+  res.json(
+    await db.run(
+      "UPDATE product SET name = 'new updated product' WHERE id = ?",
+      +req.body.id
+    )
+  );
+});
+
+app.delete("/products/:id", async (req, res) => {
+  res.send(await db.run("DELETE FROM product WHERE id = ?", +req.body.id));
 });
 
 //companies
