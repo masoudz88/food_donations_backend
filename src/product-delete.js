@@ -1,7 +1,7 @@
 const http = require("http");
 
 const productToDelete = {
-  id: 1,
+  id: 2,
 };
 const data = JSON.stringify(productToDelete);
 
