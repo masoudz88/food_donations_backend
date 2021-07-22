@@ -1,19 +1,12 @@
 const http = require("http");
 
-const productToDelete = {
-  id: 2,
-};
-const data = JSON.stringify(productToDelete);
+const id = 1;
 
 const options = {
   hostname: "localhost",
   port: 4000,
-  path: `/products/${productToDelete.id}`,
+  path: `/products/${id}`,
   method: "DELETE",
-  headers: {
-    "Content-Type": "application/json",
-    "Content-Length": data.length,
-  },
 };
 
 const request = http.request(options, (res) => {
@@ -30,4 +23,4 @@ const request = http.request(options, (res) => {
   });
 });
 
-request.end(data);
+request.end();
