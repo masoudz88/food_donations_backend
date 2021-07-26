@@ -1,7 +1,7 @@
 const http = require("http");
 
 const data = JSON.stringify({
-  name: "name of the product",
+  name: "Meat",
 });
 
 const options = {

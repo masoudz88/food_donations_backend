@@ -25,7 +25,7 @@ let db;
   CREATE TABLE IF NOT EXISTS company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
-  );   
+  );      
   `);
 })();
 
