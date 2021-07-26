@@ -67,7 +67,7 @@ app.delete("/products/:id", async (req, res) => {
 });
 //companies
 
-app.get("/companies", async (req, res) => {
+app.get("/api/companies", async (req, res) => {
   res.send(await db.all("select * from company"));
 });
 app.get("/companies/:id", async (req, res) => {
@@ -75,24 +75,20 @@ app.get("/companies/:id", async (req, res) => {
 });
 
 app.post("/companies", async (req, res) => {
-  res.send(await db.run("INSERT INTO company(name) VALUES('newCompany')"));
-});
-
-app.post("/companies/:id", async (req, res) => {
   res.send(await db.run("INSERT INTO company(name) VALUES(?)", req.body.name));
 });
 
 app.put("/companies", async (req, res) => {
   res.json(
-    await db.run(
-      "UPDATE company SET name = 'new updated company' WHERE id = ?",
-      +req.body.id
-    )
+    await db.run("UPDATE company SET name = :name WHERE id = :id", {
+      ":name": req.body.name,
+      ":id": +req.body.id,
+    })
   );
 });
 
 app.delete("/companies/:id", async (req, res) => {
-  res.send(await db.run("DELETE FROM company WHERE id = ?", +req.body.id));
+  res.send(await db.run("DELETE FROM company WHERE id = ?", +req.params.id));
 });
 
 app.listen(port, () => {
