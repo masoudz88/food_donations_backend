@@ -45,7 +45,7 @@ let fakeCompanies = [
 
 //products
 
-app.get("/products", async (req, res) => {
+app.get("/api/products", async (req, res) => {
   res.send(await db.all("select * from product"));
 });
 app.get("/products/:id", async (req, res) => {
