@@ -62,7 +62,7 @@ app.put("/products", async (req, res) => {
     })
   );
 });
-app.delete("/products/:id", async (req, res) => {
+app.delete("/api/products/:id", async (req, res) => {
   res.send(await db.run("DELETE FROM product WHERE id = ?", +req.params.id));
 });
 //companies
@@ -87,7 +87,7 @@ app.put("/companies", async (req, res) => {
   );
 });
 
-app.delete("/companies/:id", async (req, res) => {
+app.delete("api//companies/:id", async (req, res) => {
   res.send(await db.run("DELETE FROM company WHERE id = ?", +req.params.id));
 });
 
