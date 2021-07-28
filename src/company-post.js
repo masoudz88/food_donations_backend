@@ -7,7 +7,7 @@ const data = JSON.stringify({
 const options = {
   hostname: "localhost",
   port: 4000,
-  path: "/companies",
+  path: "/api/companies",
   method: "POST",
   headers: {
     "Content-Type": "application/json",

@@ -5,7 +5,7 @@ const id = 1;
 const options = {
   hostname: "localhost",
   port: 4000,
-  path: `/products/${id}`,
+  path: `/api/products/${id}`,
   method: "DELETE",
 };
 

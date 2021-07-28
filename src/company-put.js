@@ -8,7 +8,7 @@ const data = JSON.stringify({
 const options = {
   hostname: "localhost",
   port: 4000,
-  path: "/companies",
+  path: "/api/companies",
   method: "PUT",
   headers: {
     "Content-Type": "application/json",

@@ -48,13 +48,13 @@ let fakeCompanies = [
 app.get("/api/products", async (req, res) => {
   res.send(await db.all("select * from product"));
 });
-app.get("/products/:id", async (req, res) => {
+app.get("/api/products/:id", async (req, res) => {
   res.send(await db.get("select * from product where id = ?", +req.params.id));
 });
-app.post("/products", async (req, res) => {
+app.post("/api/products", async (req, res) => {
   res.send(await db.run("INSERT INTO product(name) VALUES(?)", req.body.name));
 });
-app.put("/products", async (req, res) => {
+app.put("/api/products", async (req, res) => {
   res.json(
     await db.run("UPDATE product SET name = :name WHERE id = :id", {
       ":name": req.body.name,
@@ -70,15 +70,15 @@ app.delete("/api/products/:id", async (req, res) => {
 app.get("/api/companies", async (req, res) => {
   res.send(await db.all("select * from company"));
 });
-app.get("/companies/:id", async (req, res) => {
+app.get("/api/companies/:id", async (req, res) => {
   res.send(await db.get("select * from company where id = ?", +req.params.id));
 });
 
-app.post("/companies", async (req, res) => {
+app.post("/api/companies", async (req, res) => {
   res.send(await db.run("INSERT INTO company(name) VALUES(?)", req.body.name));
 });
 
-app.put("/companies", async (req, res) => {
+app.put("/api//companies", async (req, res) => {
   res.json(
     await db.run("UPDATE company SET name = :name WHERE id = :id", {
       ":name": req.body.name,

@@ -8,7 +8,7 @@ const data = JSON.stringify(companyToDelete);
 const options = {
   hostname: "localhost",
   port: 4000,
-  path: `/companies/${companyToDelete.id}`,
+  path: `/api/companies/${companyToDelete.id}`,
   method: "DELETE",
   headers: {
     "Content-Type": "application/json",
