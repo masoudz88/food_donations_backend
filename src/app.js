@@ -78,7 +78,7 @@ app.post("/api/companies", async (req, res) => {
   res.send(await db.run("INSERT INTO company(name) VALUES(?)", req.body.name));
 });
 
-app.put("/api//companies", async (req, res) => {
+app.put("/api/companies", async (req, res) => {
   res.json(
     await db.run("UPDATE company SET name = :name WHERE id = :id", {
       ":name": req.body.name,
@@ -87,7 +87,7 @@ app.put("/api//companies", async (req, res) => {
   );
 });
 
-app.delete("api//companies/:id", async (req, res) => {
+app.delete("/api/companies/:id", async (req, res) => {
   res.send(await db.run("DELETE FROM company WHERE id = ?", +req.params.id));
 });
 
