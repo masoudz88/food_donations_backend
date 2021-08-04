@@ -5,10 +5,6 @@ const express = require("express");
 const app = express();
 const port = 4000;
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 let db;
 (async () => {
   // open the database
@@ -25,24 +21,13 @@ let db;
   CREATE TABLE IF NOT EXISTS company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
-  );      
+  ); 
+  CREATE TABLE IF NOT EXISTS user (    
+    name TEXT NOT NULL PRIMARY KEY,
+    password TEXT NOT NULL
+  );   
   `);
 })();
-
-let fakeProducts = [
-  { id: 1, name: "Meat" },
-  { id: 2, name: "Dairy" },
-  { id: 3, name: "cooked food" },
-  { id: 4, name: "Seafood" },
-];
-
-let fakeCompanies = [
-  { id: 1, name: "Sobeys" },
-  { id: 2, name: "Walmart" },
-  { id: 3, name: "Costco" },
-  { id: 4, name: "McDonald's" },
-];
-
 //products
 
 app.get("/api/products", async (req, res) => {
