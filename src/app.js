@@ -75,6 +75,15 @@ app.put("/api/companies", async (req, res) => {
 app.delete("/api/companies/:id", async (req, res) => {
   res.send(await db.run("DELETE FROM company WHERE id = ?", +req.params.id));
 });
+//users
+app.get("/api/users", async (req, res) => {
+  res.send(await db.all("select * from user"));
+});
+
+app.post("/api/users", async (req, res) => {
+  res.send(await db.run("INSERT INTO user(name) VALUES(?)", req.body.name));
+});
+
 
 app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
