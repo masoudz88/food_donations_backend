@@ -16,9 +16,12 @@ let db;
     driver: sqlite3.Database,
   });
   await db.exec(`
+  PRAGMA foreign_keys = ON;
   CREATE TABLE IF NOT EXISTS product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    FOREIGN KEY (id)
+       REFERENCES company (id)
   );  
   CREATE TABLE IF NOT EXISTS company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,7 +84,6 @@ app.delete("/api/companies/:id", async (req, res) => {
 app.get("/api/users", async (req, res) => {
   res.send(await db.all("select * from user"));
 });
-
 app.post("/api/users", async (req, res) => {
   res.send(
     await db.run(
@@ -90,6 +92,30 @@ app.post("/api/users", async (req, res) => {
       req.body.password
     )
   );
+});
+app.put("/api/users", async (req, res) => {
+  res.json(
+    await db.run("UPDATE user SET password = :password WHERE name = :name", {
+      ":name": req.body.name,
+      ":password": req.body.password,
+    })
+  );
+});
+
+//login
+app.all("/api/users/login", function (req, res, next) {
+  res.send("log in page ...");
+  next(); // pass control to the next handler
+});
+//logout
+app.all("/api/users/logout", function (req, res, next) {
+  res.send("logout page ...");
+  next();
+});
+//who am i
+app.all("/api/users/whoami", function (req, res, next) {
+  res.send("your name is here");
+  next();
 });
 
 app.listen(port, () => {
