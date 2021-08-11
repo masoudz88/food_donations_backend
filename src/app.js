@@ -4,7 +4,9 @@ const { open } = require("sqlite");
 const express = require("express");
 const app = express();
 const port = 4000;
-
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 let db;
 (async () => {
   // open the database
@@ -81,9 +83,14 @@ app.get("/api/users", async (req, res) => {
 });
 
 app.post("/api/users", async (req, res) => {
-  res.send(await db.run("INSERT INTO user(name) VALUES(?)", req.body.name));
+  res.send(
+    await db.run(
+      "INSERT INTO user(name,password) VALUES(?)",
+      req.body.name,
+      req.body.password
+    )
+  );
 });
-
 
 app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
