@@ -2,7 +2,18 @@ const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
 
 const express = require("express");
+const session = require("express-session");
 const app = express();
+app.set("trust proxy", 1); // trust first proxy
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true, maxAge: 1000 * 60 * 24 },
+  })
+);
+
 const port = 4000;
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
@@ -22,6 +33,8 @@ let db;
     name TEXT NOT NULL,
     FOREIGN KEY (id)
        REFERENCES company (id)
+       ON UPDATE SET NULL
+       ON DELETE SET NULL
   );  
   CREATE TABLE IF NOT EXISTS company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -103,17 +116,30 @@ app.put("/api/users", async (req, res) => {
 });
 
 //login
-app.all("/api/users/login", function (req, res, next) {
-  res.send("log in page ...");
-  next(); // pass control to the next handler
+app.get("/api/login", (req, res) => {
+  if (req.session.viewCount) {
+    req.session.viewCount++;
+  } else {
+    req.session.viewCount = 1;
+  }
+  console.log(req.session.viewCount);
+  res.send(`the number you have viewed ${req.session.viewCount}`);
+});
+app.post("/api/login", async (req, res) => {
+  if (req.session.viewCount) {
+    req.session.viewCount++;
+  } else {
+    req.session.viewCount = 1;
+  }
+  res.send(req.session.viewCount);
 });
 //logout
-app.all("/api/users/logout", function (req, res, next) {
+app.all("/api/logout", function (req, res, next) {
   res.send("logout page ...");
   next();
 });
 //who am i
-app.all("/api/users/whoami", function (req, res, next) {
+app.all("/api/whoami", function (req, res, next) {
   res.send("your name is here");
   next();
 });
