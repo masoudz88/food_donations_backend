@@ -3,13 +3,15 @@ const { open } = require("sqlite");
 
 const express = require("express");
 const session = require("express-session");
+const SQLiteStore = require("connect-sqlite3")(session);
 const app = express();
 app.set("trust proxy", 1); // trust first proxy
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: "my-secret",
     resave: false,
     saveUninitialized: true,
+    store: new SQLiteStore(),
     cookie: { secure: true, maxAge: 1000 * 60 * 24 },
   })
 );
