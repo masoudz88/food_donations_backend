@@ -119,13 +119,12 @@ app.put("/api/users", async (req, res) => {
 
 //login
 app.get("/api/login", (req, res) => {
-  if (req.session.viewCount) {
-    req.session.viewCount++;
+  if (req.session.name) {
+    req.session.name===req.body.name;
   } else {
-    req.session.viewCount = 1;
-  }
-  console.log(req.session.viewCount);
-  res.send(`the number you have viewed ${req.session.viewCount}`);
+    req.session.name = "undefined";
+  }  
+  res.send(`you have logged in as ${req.session.name}`);
 });
 app.post("/api/login", async (req, res) => {
   if (req.session.viewCount) {
