@@ -59,11 +59,11 @@ app.get("/api/products/:id", async (req, res) => {
 app.post("/api/products", async (req, res) => {
   res.send(await db.run("INSERT INTO product(name) VALUES(?)", req.body.name));
 });
-app.put("/api/products", async (req, res) => {
+app.put("/api/products/:id", async (req, res) => {
   res.json(
     await db.run("UPDATE product SET name = :name WHERE id = :id", {
       ":name": req.body.name,
-      ":id": +req.body.id,
+      ":id": req.params.id,
     })
   );
 });
@@ -83,11 +83,11 @@ app.post("/api/companies", async (req, res) => {
   res.send(await db.run("INSERT INTO company(name) VALUES(?)", req.body.name));
 });
 
-app.put("/api/companies", async (req, res) => {
+app.put("/api/companies/:id", async (req, res) => {
   res.json(
     await db.run("UPDATE company SET name = :name WHERE id = :id", {
       ":name": req.body.name,
-      ":id": +req.body.id,
+      ":id": req.params.id,
     })
   );
 });
@@ -128,7 +128,7 @@ app.get("/api/login", (req, res) => {
   res.status(400).send(`name is required`);
 });
 app.post("/api/login", async (req, res) => {  
-  res.send(`name ${req.body.name}, paasword ${req.body.password}`);
+  res.send(`name ${req.body.username}, paasword ${req.body.password}`);
 });
 //logout
 app.all("/api/logout", function (req, res, next) {
