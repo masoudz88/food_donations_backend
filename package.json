@@ -9,7 +9,7 @@
   },
   "author": "Masoud Zare",
   "dependencies": {
-    "connect-sqlite3": "^0.9.11",
+    "connect-sqlite3": "^0.9.12",
     "debug": "^4.3.2",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

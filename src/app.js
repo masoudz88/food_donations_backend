@@ -119,20 +119,16 @@ app.put("/api/users", async (req, res) => {
 
 //login
 app.get("/api/login", (req, res) => {
-  if (req.session.name) {
+  if (req.body.name) {
     req.session.name===req.body.name;
+    res.status(200).send(`you have logged in as ${req.body.name}`);
   } else {
     req.session.name = "undefined";
   }  
-  res.send(`you have logged in as ${req.session.name}`);
+  res.status(400).send(`name is required`);
 });
-app.post("/api/login", async (req, res) => {
-  if (req.session.viewCount) {
-    req.session.viewCount++;
-  } else {
-    req.session.viewCount = 1;
-  }
-  res.send(req.session.viewCount);
+app.post("/api/login", async (req, res) => {  
+  res.send(`name ${req.body.name}, paasword ${req.body.password}`);
 });
 //logout
 app.all("/api/logout", function (req, res, next) {
