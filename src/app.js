@@ -32,12 +32,13 @@ let db;
   PRAGMA foreign_keys = ON;
   CREATE TABLE IF NOT EXISTS product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER NOT NULL,
     name TEXT NOT NULL,
-    FOREIGN KEY (id)
+    FOREIGN KEY (company_id)
        REFERENCES company (id)
-       ON UPDATE SET NULL
-       ON DELETE SET NULL
-  );  
+       ON UPDATE CASCADE
+       ON DELETE CASCADE
+  );
   CREATE TABLE IF NOT EXISTS company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
@@ -45,19 +46,27 @@ let db;
   CREATE TABLE IF NOT EXISTS user (    
     name TEXT NOT NULL PRIMARY KEY,
     password TEXT NOT NULL
-  );   
+  );
   `);
 })();
 //products
 
 app.get("/api/products", async (req, res) => {
-  res.send(await db.all("select * from product"));
+  console.log(req.query);
+  if (req.query.companyId !== undefined) {
+    res.send(await db.all("select * from product where company_id = ?", +req.query.companyId));
+  } else {
+    res.send(await db.all("select * from product"));
+  }
 });
 app.get("/api/products/:id", async (req, res) => {
   res.send(await db.get("select * from product where id = ?", +req.params.id));
 });
 app.post("/api/products", async (req, res) => {
-  res.send(await db.run("INSERT INTO product(name) VALUES(?)", req.body.name));
+  res.send(await db.run("INSERT INTO product(name, company_id) VALUES(:name, :company_id)", {
+    ":name": req.body.name,
+    ":company_id": +req.body.companyId,
+  }));
 });
 app.put("/api/products/:id", async (req, res) => {
   res.json(
@@ -97,18 +106,22 @@ app.delete("/api/companies/:id", async (req, res) => {
 });
 //users
 app.get("/api/users", async (req, res) => {
+  // ensure that you do not send passwords to everyone
   res.send(await db.all("select * from user"));
 });
 app.post("/api/users", async (req, res) => {
   res.send(
     await db.run(
-      "INSERT INTO user(name,password) VALUES(?)",
-      req.body.name,
-      req.body.password
+      "INSERT INTO user(name,password) VALUES(:name, :password)",
+      {
+        ":name", req.body.name,
+        ":password", req.body.password // ensure you use bcrypt to hash the password
+      }
     )
   );
 });
 app.put("/api/users", async (req, res) => {
+  // make sure that the user is currently logged in as the user they are about to modify
   res.json(
     await db.run("UPDATE user SET password = :password WHERE name = :name", {
       ":name": req.body.name,
@@ -118,27 +131,29 @@ app.put("/api/users", async (req, res) => {
 });
 
 //login
-app.get("/api/login", (req, res) => {
+app.post("/api/login", (req, res) => {
+  // ensure that the name and password are correct based on the person they are trying to log in as
+
   if (req.body.name) {
-    req.session.name===req.body.name;
+    req.session.name = req.body.name;
     res.status(200).send(`you have logged in as ${req.body.name}`);
-  } else {
-    req.session.name = "undefined";
-  }  
+    return;
+  }
+  
   res.status(400).send(`name is required`);
 });
-app.post("/api/login", async (req, res) => {  
-  res.send(`name ${req.body.username}, paasword ${req.body.password}`);
-});
 //logout
-app.all("/api/logout", function (req, res, next) {
+app.get("/api/logout", function (req, res) {
+  // destroy the session
   res.send("logout page ...");
-  next();
 });
 //who am i
-app.all("/api/whoami", function (req, res, next) {
+app.get("/api/whoami", function (req, res) {
+  // send the user their req.session.name
+
+  // if the user is not currently logged in, return 404
+
   res.send("your name is here");
-  next();
 });
 
 app.listen(port, () => {
