@@ -4,6 +4,7 @@ const { open } = require("sqlite");
 const express = require("express");
 const session = require("express-session");
 const SQLiteStore = require("connect-sqlite3")(session);
+const seed = require("./seeds");
 const app = express();
 app.set("trust proxy", 1); // trust first proxy
 app.use(
@@ -28,7 +29,7 @@ let db;
     filename: "database.db",
     driver: sqlite3.Database,
   });
-  await db.exec(`
+  await db.exec(`  
   PRAGMA foreign_keys = ON;
   CREATE TABLE IF NOT EXISTS product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,7 +47,13 @@ let db;
   CREATE TABLE IF NOT EXISTS user (    
     name TEXT NOT NULL PRIMARY KEY,
     password TEXT NOT NULL
-  );
+  ); 
+  CREATE TABLE  IF NOT EXISTS user_company (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER,
+    user_id INTEGER
+    );
+        
   `);
 })();
 //products
@@ -54,7 +61,12 @@ let db;
 app.get("/api/products", async (req, res) => {
   console.log(req.query);
   if (req.query.companyId !== undefined) {
-    res.send(await db.all("select * from product where company_id = ?", +req.query.companyId));
+    res.send(
+      await db.all(
+        "select * from product where company_id = ?",
+        +req.query.companyId
+      )
+    );
   } else {
     res.send(await db.all("select * from product"));
   }
@@ -63,21 +75,35 @@ app.get("/api/products/:id", async (req, res) => {
   res.send(await db.get("select * from product where id = ?", +req.params.id));
 });
 app.post("/api/products", async (req, res) => {
-  res.send(await db.run("INSERT INTO product(name, company_id) VALUES(:name, :company_id)", {
-    ":name": req.body.name,
-    ":company_id": +req.body.companyId,
-  }));
+  res.send(
+    await db.run(
+      "INSERT INTO product(name, company_id) VALUES(:name, :company_id)",
+      {
+        ":name": req.body.name,
+        ":company_id": +req.body.companyId,
+      }
+    )
+  );
 });
 app.put("/api/products/:id", async (req, res) => {
   res.json(
-    await db.run("UPDATE product SET name = :name WHERE id = :id", {
-      ":name": req.body.name,
-      ":id": req.params.id,
-    })
+    await db.run(
+      "UPDATE product SET name = :name WHERE id = :id AND company_id= :company_id",
+      {
+        ":name": req.body.name,
+        ":id": req.params.id,
+        ":company_id": +req.body.companyId,
+      }
+    )
   );
 });
 app.delete("/api/products/:id", async (req, res) => {
-  res.send(await db.run("DELETE FROM product WHERE id = ?", +req.params.id));
+  res.send(
+    await db.run(
+      "DELETE FROM product WHERE id = :id AND company_id= :company_id",
+      { ":id": req.params.id, ":company_id": +req.body.companyId }
+    )
+  );
 });
 //companies
 
@@ -111,13 +137,10 @@ app.get("/api/users", async (req, res) => {
 });
 app.post("/api/users", async (req, res) => {
   res.send(
-    await db.run(
-      "INSERT INTO user(name,password) VALUES(:name, :password)",
-      {
-        ":name", req.body.name,
-        ":password", req.body.password // ensure you use bcrypt to hash the password
-      }
-    )
+    await db.run("INSERT INTO user(name,password) VALUES(:name, :password)", {
+      ":name": req.body.name,
+      ":password": req.body.password, // ensure you use bcrypt to hash the password
+    })
   );
 });
 app.put("/api/users", async (req, res) => {
@@ -139,7 +162,7 @@ app.post("/api/login", (req, res) => {
     res.status(200).send(`you have logged in as ${req.body.name}`);
     return;
   }
-  
+
   res.status(400).send(`name is required`);
 });
 //logout
