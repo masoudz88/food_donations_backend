@@ -50,8 +50,8 @@ let db;
   ); 
   CREATE TABLE  IF NOT EXISTS user_company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER,
-    user_id INTEGER
+    company_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL
     );
         
   `);
