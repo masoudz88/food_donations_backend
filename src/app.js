@@ -59,7 +59,6 @@ let db;
 //products
 
 app.get("/api/products", async (req, res) => {
-  console.log(req.query);
   if (req.query.companyId !== undefined) {
     res.send(
       await db.all(
@@ -97,11 +96,12 @@ app.put("/api/products/:id", async (req, res) => {
     )
   );
 });
-app.delete("/api/products/:id", async (req, res) => {
+app.delete("/api/products/:company_id/:id", async (req, res) => {
+  console.log(+req.params.id, +req.params.company_id);
   res.send(
     await db.run(
       "DELETE FROM product WHERE id = :id AND company_id= :company_id",
-      { ":id": req.params.id, ":company_id": +req.body.companyId }
+      { ":id": +req.params.id, ":company_id": +req.params.company_id }
     )
   );
 });
