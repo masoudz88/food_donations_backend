@@ -11,7 +11,7 @@ app.use(
   session({
     secret: "my-secret",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: new SQLiteStore(),
     cookie: { secure: true, maxAge: 1000 * 60 * 24 },
   })
@@ -161,14 +161,12 @@ app.put("/api/users", async (req, res) => {
 //login
 app.post("/api/login", (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
+
   const { name, password } = req.body;
+
   if (name && password) {
-    const user = users.find(
-      (user) => user.name === name && user.password === password
-    );
-  }
-  if (user) {
-    req.session.name === user.name;
+    req.session.name === name;
+    req.session.password === password;
   }
 });
 //logout
