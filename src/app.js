@@ -161,14 +161,23 @@ app.put("/api/users", async (req, res) => {
 //login
 app.post("/api/login", (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
-  
+  const { name, password } = req.body;
+  if (name && password) {
+    const user = users.find(
+      (user) => user.name === name && user.password === password
+    );
+  }
+  if (user) {
+    req.session.name === user.name;
+  }
 });
 //logout
 app.get("/api/logout", function (req, res) {
-  req.session.destroy((err)=> {
-    res.send("logout ...");
-  })
-  
+  req.session.destroy((err) => {
+    if (err) {
+      return res.send("logged out ");
+    }
+  });
 });
 //who am i
 app.get("/api/whoami", function (req, res) {
