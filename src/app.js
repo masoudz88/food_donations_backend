@@ -11,7 +11,7 @@ app.use(
   session({
     secret: "my-secret",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: new SQLiteStore(),
     cookie: { secure: true, maxAge: 1000 * 60 * 24 },
   })
@@ -70,8 +70,13 @@ app.get("/api/products", async (req, res) => {
     res.send(await db.all("select * from product"));
   }
 });
-app.get("/api/products/:id", async (req, res) => {
-  res.send(await db.get("select * from product where id = ?", +req.params.id));
+app.get("/api/products/:company_id/:id", async (req, res) => {
+  res.send(
+    await db.get(
+      "select * from product where company_id = :company_id AND id = :id",
+      { ":id": +req.params.id, ":company_id": +req.params.company_id }
+    )
+  );
 });
 app.post("/api/products", async (req, res) => {
   res.send(
@@ -156,27 +161,25 @@ app.put("/api/users", async (req, res) => {
 //login
 app.post("/api/login", (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
-
-  if (req.body.name) {
-    req.session.name = req.body.name;
-    res.status(200).send(`you have logged in as ${req.body.name}`);
-    return;
-  }
-
-  res.status(400).send(`name is required`);
+  
 });
 //logout
 app.get("/api/logout", function (req, res) {
-  // destroy the session
-  res.send("logout page ...");
+  req.session.destroy((err)=> {
+    res.send("logout ...");
+  })
+  
 });
 //who am i
 app.get("/api/whoami", function (req, res) {
   // send the user their req.session.name
-
-  // if the user is not currently logged in, return 404
-
-  res.send("your name is here");
+  if (req.body.name) {
+    req.session.name = req.body.name;
+    res.status(200).send(`you have logged in as ${req.body.name}`);
+    return;
+  } else {
+    res.status(404).send("You are not logged in");
+  }
 });
 
 app.listen(port, () => {
