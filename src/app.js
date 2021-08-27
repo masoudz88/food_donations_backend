@@ -163,7 +163,6 @@ app.post("/api/login", (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
 
   const { name, password } = req.body;
-
   if (name && password) {
     req.session.name === name;
     req.session.password === password;
@@ -180,6 +179,7 @@ app.get("/api/logout", function (req, res) {
 //who am i
 app.get("/api/whoami", function (req, res) {
   // send the user their req.session.name
+
   if (req.body.name) {
     req.session.name = req.body.name;
     res.status(200).send(`you have logged in as ${req.body.name}`);
