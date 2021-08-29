@@ -146,7 +146,7 @@ app.get("/api/users", async (req, res) => {
   // ensure that you do not send passwords to everyone
   res.send(await db.all("select * from user"));
 });
-app.post("/api/users", async (req, res) => {
+app.post("/api/signup", async (req, res) => {
   res.send(
     await db.run("INSERT INTO user(name,password) VALUES(:name, :password)", {
       ":name": req.body.name,
@@ -165,10 +165,17 @@ app.put("/api/users", async (req, res) => {
 });
 
 //login
-app.post("/api/login", (req, res) => {
+app.post("/api/login", async (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
 
   const { name, password } = req.body;
+  await db.get(
+    "select * from user where name = :name AND password= :password",
+    {
+      ":name": name,
+      ":password": password,
+    }
+  );
   if (name && password) {
     req.session.name === name;
     req.session.password === password;
