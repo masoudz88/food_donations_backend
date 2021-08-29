@@ -50,8 +50,14 @@ let db;
   ); 
   CREATE TABLE  IF NOT EXISTS user_company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL
+    FOREIGN KEY (company_id)
+       REFERENCES company (id)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE,
+    FOREIGN KEY (user_id)
+       REFERENCES user (name)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE    
     );
         
   `);
