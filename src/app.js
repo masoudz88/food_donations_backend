@@ -169,24 +169,25 @@ app.post("/api/login", async (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
 
   const { name, password } = req.body;
-  await db.get(
-    "select * from user where name = :name AND password= :password",
-    {
-      ":name": name,
-      ":password": password,
-    }
+  res.send(
+    await db.get(
+      "select * from user where name = :name AND password= :password",
+      {
+        ":name": name,
+        ":password": password,
+      }
+    )
   );
   if (name && password) {
-    req.session.name === name;
-    req.session.password === password;
+    req.session.name = name;
+    console.log(req.session.name);
+    req.session.password = password;
   }
 });
 //logout
 app.get("/api/logout", function (req, res) {
   req.session.destroy((err) => {
-    if (err) {
-      return res.send("logged out ");
-    }
+    res.send("done");
   });
 });
 //who am i
