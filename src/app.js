@@ -1,6 +1,7 @@
 const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
-
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const express = require("express");
 const session = require("express-session");
 const SQLiteStore = require("connect-sqlite3")(session);
@@ -48,16 +49,17 @@ let db;
     name TEXT NOT NULL PRIMARY KEY,
     password TEXT NOT NULL
   ); 
-  CREATE TABLE  IF NOT EXISTS user_company (
+  CREATE TABLE IF NOT EXISTS user_company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    FOREIGN KEY (company_id)
-       REFERENCES company (id)
+    FOREIGN KEY (user_id)
+    REFERENCES company (id) 
        ON UPDATE CASCADE
        ON DELETE CASCADE,
-    FOREIGN KEY (user_id)
-       REFERENCES user (name)
-       ON UPDATE CASCADE
-       ON DELETE CASCADE    
+    FOREIGN KEY (user_name)
+    REFERENCES user (name) 
+        ON UPDATE CASCADE
+        ON DELETE CASCADE   
+       
     );
         
   `);
@@ -147,10 +149,13 @@ app.get("/api/users", async (req, res) => {
   res.send(await db.all("select * from user"));
 });
 app.post("/api/signup", async (req, res) => {
+  const { name, password } = req.body;
+  const hashed = bcrypt.hash(password, saltRounds);
+
   res.send(
     await db.run("INSERT INTO user(name,password) VALUES(:name, :password)", {
-      ":name": req.body.name,
-      ":password": req.body.password, // ensure you use bcrypt to hash the password
+      ":name": name,
+      ":password": hashed, // ensure you use bcrypt to hash the password
     })
   );
 });
