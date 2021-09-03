@@ -150,14 +150,14 @@ app.get("/api/users", async (req, res) => {
 });
 app.post("/api/signup", async (req, res) => {
   const { name, password } = req.body;
-  const hashed = bcrypt.hash(password, saltRounds);
-
-  res.send(
-    await db.run("INSERT INTO user(name,password) VALUES(:name, :password)", {
-      ":name": name,
-      ":password": hashed, // ensure you use bcrypt to hash the password
-    })
-  );
+  const hashed = bcrypt.hash(password, saltRounds, async (err, hash) => {
+    res.send(
+      await db.run("INSERT INTO user(name,password) VALUES(:name, :password)", {
+        ":name": name,
+        ":password": hash, // ensure you use bcrypt to hash the password
+      })
+    );
+  });
 });
 app.put("/api/users", async (req, res) => {
   // make sure that the user is currently logged in as the user they are about to modify
@@ -174,13 +174,13 @@ app.post("/api/login", async (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
 
   const { name, password } = req.body;
-  const existingUser = await db.get(
+  const existingUser = res.send(await db.get(
     "select * from user where name = :name AND password= :password",
     {
       ":name": name,
       ":password": password,
     }
-  );
+  ));
   if (!existingUser)
     return res.json({ msg: `No account with this email found` });
   const doesPasswordMatch = bcrypt.compare(password, existingUser.password);
