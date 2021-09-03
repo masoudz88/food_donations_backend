@@ -174,20 +174,19 @@ app.post("/api/login", async (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
 
   const { name, password } = req.body;
-  res.send(
-    await db.get(
-      "select * from user where name = :name AND password= :password",
-      {
-        ":name": name,
-        ":password": password,
-      }
-    )
+  const existingUser = await db.get(
+    "select * from user where name = :name AND password= :password",
+    {
+      ":name": name,
+      ":password": password,
+    }
   );
-  if (name && password) {
-    req.session.name = name;
-    console.log(req.session.name);
-    req.session.password = password;
-  }
+  if (!existingUser)
+    return res.json({ msg: `No account with this email found` });
+  const doesPasswordMatch = bcrypt.compare(password, existingUser.password);
+  if (!doesPasswordMatch) return res.json({ msg: `Passwords did not match` });
+  req.session.name = name;
+  res.json(existingUser);
 });
 //logout
 app.get("/api/logout", function (req, res) {
