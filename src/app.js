@@ -14,7 +14,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     store: new SQLiteStore(),
-    cookie: { secure: true, maxAge: 1000 * 60 * 24 },
+    cookie: { secure: false, maxAge: 1000 * 60 * 24 },
   })
 );
 
@@ -174,19 +174,29 @@ app.post("/api/login", async (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
 
   const { name, password } = req.body;
-  const existingUser = res.send(await db.get(
-    "select * from user where name = :name AND password= :password",
+  const existingUser = await db.get(
+    "select * from user where name = :name",
     {
       ":name": name,
-      ":password": password,
     }
-  ));
-  if (!existingUser)
-    return res.json({ msg: `No account with this email found` });
-  const doesPasswordMatch = bcrypt.compare(password, existingUser.password);
-  if (!doesPasswordMatch) return res.json({ msg: `Passwords did not match` });
+  );
+
+  console.log('existingUser', existingUser);
+
+  if (!existingUser) {
+    return res.status(403).json({ msg: `No account with this email found` });
+  }
+
+  const doesPasswordMatch = await bcrypt.compare(password, existingUser.password);
+
+  console.log('doesPasswordMatch', doesPasswordMatch);
+
+  if (!doesPasswordMatch) {
+    return res.status(403).json({ msg: `Passwords did not match` });
+  }
+
   req.session.name = name;
-  res.json(existingUser);
+  res.json({ name: existingUser.name });
 });
 //logout
 app.get("/api/logout", function (req, res) {
@@ -198,10 +208,8 @@ app.get("/api/logout", function (req, res) {
 app.get("/api/whoami", function (req, res) {
   // send the user their req.session.name
 
-  if (req.body.name) {
-    req.session.name = req.body.name;
-    res.status(200).send(`you have logged in as ${req.body.name}`);
-    return;
+  if (req.session.name) {
+    res.json({ name: req.session.name });
   } else {
     res.status(404).send("You are not logged in");
   }
