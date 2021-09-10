@@ -51,6 +51,8 @@ let db;
   ); 
   CREATE TABLE IF NOT EXISTS user_company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    user_name TEXT NOT NULL,
     FOREIGN KEY (user_id)
     REFERENCES company (id) 
        ON UPDATE CASCADE
@@ -58,10 +60,10 @@ let db;
     FOREIGN KEY (user_name)
     REFERENCES user (name) 
         ON UPDATE CASCADE
-        ON DELETE CASCADE   
+        ON DELETE CASCADE 
        
     );
-        
+     
   `);
 })();
 //products
@@ -121,14 +123,22 @@ app.delete("/api/products/:company_id/:id", async (req, res) => {
 //companies
 
 app.get("/api/companies", async (req, res) => {
-  res.send(await db.all("select * from company"));
+  res.send(
+    await db.all(
+      "select company.name,company.id from company JOIN user_company ON company.id=user_company.user_id"
+    )
+  );
 });
 app.get("/api/companies/:id", async (req, res) => {
   res.send(await db.get("select * from company where id = ?", +req.params.id));
 });
 
 app.post("/api/companies", async (req, res) => {
-  res.send(await db.run("INSERT INTO company(name) VALUES(?)", req.body.name));
+  res.send(
+    await db.run(`INSERT INTO company(name) VALUES(:company)`, {
+      ":company": req.body.name,
+    })
+  );
 });
 
 app.put("/api/companies/:id", async (req, res) => {
@@ -174,22 +184,22 @@ app.post("/api/login", async (req, res) => {
   // ensure that the name and password are correct based on the person they are trying to log in as
 
   const { name, password } = req.body;
-  const existingUser = await db.get(
-    "select * from user where name = :name",
-    {
-      ":name": name,
-    }
-  );
+  const existingUser = await db.get("select * from user where name = :name", {
+    ":name": name,
+  });
 
-  console.log('existingUser', existingUser);
+  console.log("existingUser", existingUser);
 
   if (!existingUser) {
     return res.status(403).json({ msg: `No account with this email found` });
   }
 
-  const doesPasswordMatch = await bcrypt.compare(password, existingUser.password);
+  const doesPasswordMatch = await bcrypt.compare(
+    password,
+    existingUser.password
+  );
 
-  console.log('doesPasswordMatch', doesPasswordMatch);
+  console.log("doesPasswordMatch", doesPasswordMatch);
 
   if (!doesPasswordMatch) {
     return res.status(403).json({ msg: `Passwords did not match` });
