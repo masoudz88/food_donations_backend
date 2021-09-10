@@ -4,3 +4,13 @@
 
 # [food_ donation_frontend](https://github.com/masoudz88/food_donations_frontend/)
 * This project is splitted to *two* parts so that I can concentrate more on each section. The [frontend repo](https://github.com/masoudz88/food_donations_frontend/) contains all react codes related to front end and communicates with backend using REST API.
+
+# Running the Application
+* Ensure you are using a modern node version
+## Front end
+* cd /waste-management-system
+* npm install
+* npm start
+## Back end
+* npm install
+* node src/app.js
