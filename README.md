@@ -14,3 +14,5 @@
 ## Back end
 * npm install
 * node src/app.js
+
+* Open up http://localhost:3000/, the app should now be running!
