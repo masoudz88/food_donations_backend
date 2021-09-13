@@ -4,7 +4,8 @@
 
 # [food_ donation_frontend](https://github.com/masoudz88/food_donations_frontend/)
 * This project is splitted to *two* parts so that I can concentrate more on each section. The [frontend repo](https://github.com/masoudz88/food_donations_frontend/) contains all react codes related to front end and communicates with backend using REST API.
-
+## Video presentation
+* here is a [Video Presentation](https://www.loom.com/share/06b6557d55034548ad83570fab343e40) walking through the app!
 # Running the Application
 * Ensure you are using a modern node version
 ## Front end
