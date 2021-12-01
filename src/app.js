@@ -63,7 +63,7 @@ let db;
         ON DELETE CASCADE 
        
     );
-     
+        
   `);
 })();
 //products
@@ -123,11 +123,7 @@ app.delete("/api/products/:company_id/:id", async (req, res) => {
 //companies
 
 app.get("/api/companies", async (req, res) => {
-  res.send(
-    await db.all(
-      "select company.name,company.id from company JOIN user_company ON company.id=user_company.user_id"
-    )
-  );
+  res.send(await db.all("select * from company"));
 });
 app.get("/api/companies/:id", async (req, res) => {
   res.send(await db.get("select * from company where id = ?", +req.params.id));
@@ -188,7 +184,7 @@ app.post("/api/login", async (req, res) => {
     ":name": name,
   });
 
-  console.log("existingUser", existingUser);
+  console.log("existing User", existingUser);
 
   if (!existingUser) {
     return res.status(403).json({ msg: `No account with this email found` });
